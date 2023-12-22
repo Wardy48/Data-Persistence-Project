@@ -4,6 +4,21 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
+public class SceneInfo
+{
+    // Make sceneNumber a public static variable
+    public static int sceneNumber;
+
+    public static void UpdateSceneNumber()
+    {
+        // Get the current active scene
+        Scene sceneLoaded = SceneManager.GetActiveScene();
+
+        // Update the sceneNumber
+        sceneNumber = sceneLoaded.buildIndex;
+    }
+}
+
 public class MainManager : MonoBehaviour
 {
     public Brick BrickPrefab;
@@ -11,6 +26,7 @@ public class MainManager : MonoBehaviour
     public Rigidbody Ball;
 
     public Text ScoreText;
+    
     public GameObject GameOverText;
     
     private bool m_Started = false;
@@ -18,12 +34,13 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
     // Start is called before the first frame update
     void Start()
     {
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
+
+        string playerName = PlayerPrefs.GetString("NameChosenByUser");        
         
         int[] pointCountArray = new [] {1,1,2,2,5,5};
         for (int i = 0; i < LineCount; ++i)
@@ -35,7 +52,9 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
-        }
+        }        
+        
+        ScoreText.text = $"{playerName}'s score: {m_Points}";
     }
 
     private void Update()
@@ -64,8 +83,9 @@ public class MainManager : MonoBehaviour
 
     void AddPoint(int point)
     {
+        string playerName = PlayerPrefs.GetString("NameChosenByUser");
         m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        ScoreText.text = $"{playerName}'s score: {m_Points}";
     }
 
     public void GameOver()
